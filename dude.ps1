@@ -1,34 +1,27 @@
-# Create a WSH Shell object
-$wshell = New-Object -ComObject Wscript.Shell
-
-# Display the pop-up notification
-$wshell.Popup("true", 0, "Key Logger Enabled", 0x0)
-
-# Load the necessary assembly for keyboard input
 Add-Type -AssemblyName System.Windows.Forms
+[System.Windows.Forms.Application]::EnableVisualStyles()
 
-# Get the path to the desktop
-$desktopPath = [Environment]::GetFolderPath("Desktop")
-$outputFile = Join-Path $desktopPath "keylog.txt"
+$form = New-Object System.Windows.Forms.Form
+$form.Text = 'Hello World GUI'
+$form.Size = New-Object System.Drawing.Size(300,200)
+$form.StartPosition = 'CenterScreen'
 
-# Create an empty array to store key presses
-$keyPresses = @()
+$label = New-Object System.Windows.Forms.Label
+$label.Location = New-Object System.Drawing.Point(10,20)
+$label.Size = New-Object System.Drawing.Size(280,20)
+$label.Text = 'Hello, World!'
+$label.TextAlign = [System.Drawing.ContentAlignment]::MiddleCenter
+$label.Font = New-Object System.Drawing.Font("Arial", 12, [System.Drawing.FontStyle]::Bold)
 
-# Function to handle key press events
-$keyLogger = {
-    param($key)
-    
-    $keyPress = $key.KeyChar
-    if ($keyPress) {
-        $keyPresses += $keyPress
-        $keyPresses -join '' | Out-File -FilePath $outputFile
-    }
-}
+$button = New-Object System.Windows.Forms.Button
+$button.Location = New-Object System.Drawing.Point(100,100)
+$button.Size = New-Object System.Drawing.Size(100,30)
+$button.Text = 'Close'
+$button.Add_Click({ $form.Close() })
 
-# Create a form to capture key presses
-$form = New-Object Windows.Forms.Form
-$form.TopMost = $true
-$form.Add_KeyPress($keyLogger)
+$form.Controls.Add($label)
+$form.Controls.Add($button)
 
-# Show the form and start the application loop
-[Windows.Forms.Application]::Run($form)
+$form.Topmost = $true
+
+$form.ShowDialog()
